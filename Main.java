@@ -14,9 +14,15 @@ public class Main {
         for (Notebook nb: notebooks){
             System.out.println(nb.toString());
         }
+        System.out.println("------------------------------");
+        Map<String, String> filter = getfilter();
+        List<Notebook> filteredlist = filter(filter, notebooks);
+        for (Notebook nb: filteredlist){
+            System.out.println(nb.toString());
+        }
     }
 
-    public Map<String, String> getfilter(){
+    public static Map<String, String> getfilter(){
         Scanner scn = new Scanner(System.in);
         String ram = "";
         String hdd = "";
@@ -30,17 +36,69 @@ public class Main {
         hdd = scn.nextLine();
         res.put("hdd", hdd);
         System.out.println();
-        System.out.print("Введите объем диска (64, 128 т.д.): ");
+        System.out.print("Введите название установленной ОС (Windows, Linux и т.д.): ");
         os = scn.nextLine();
         res.put("os", os);
         return res;
     }
 
-    public List<Notebook> filter(Map<String, String> params, List<Notebook> notebooks){
+    public static List<Notebook> filter(Map<String, String> params, List<Notebook> notebooks){
         List<Notebook> res = new ArrayList<>();
+        boolean isram = false;
+        boolean ishdd = false;
+        boolean isos  = false;
+        int ram = 0;
+        int hdd = 0;
+        String os = "0";
+        String tmp = "";
+        for (Map.Entry<String, String> val: params.entrySet()) {
+            tmp = val.getKey();
+            switch (tmp) {
+                case ("ram"):
+                    if (!val.getValue().isEmpty()) {
+                        ram = Integer.parseInt(val.getValue());
+                        break;
+                    } else{
+                        ram = 0;
+                        break;
+                    }
+                case ("hdd"):
+                    if (!val.getValue().isEmpty()) {
+                        hdd = Integer.parseInt(val.getValue());
+                        break;
+                    } else{
+                        hdd = 0;
+                        break;
+                    }
+                case ("os"):
+                    if (!val.getValue().isEmpty()) {
+                        os = val.getValue();
+                        break;
+                    } else{
+                        os = "";
+                        break;
+                    }
+            }
+        }
+        for (Notebook nb: notebooks){
+            if (ram == Integer.parseInt(nb.getRam()) || ram == 0){
+                isram = true;
+            }
+            if (hdd == Integer.parseInt(nb.getHdd()) || hdd == 0){
+                ishdd = true;
+            }
+            if (nb.getOs().toLowerCase().contains(os.toLowerCase()) || os == ""){
+                isos = true;
+            }
+            if (isram && ishdd && isos){
+                res.add(nb);
+                isram = false;
+                ishdd = false;
+                isos = false;
+            }
+        }
 
-
-        return null;
+        return res;
     }
 
 }
